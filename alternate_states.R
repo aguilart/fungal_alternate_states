@@ -61,20 +61,31 @@ Li_tree_functions$plant_pathogen <- 0
 Li_tree_functions$plant_pathogen[grep("plant_pathogen",
                                        Li_tree_functions$guild,
                                        ignore.case = T)] <- 1
+
+# Checking which fungi do not have funcitional data
+
 m <-
 which(rowSums(Li_tree_functions[, c("saprotrophs__cold_blooded_animals",
                                     "wood_saprotrophs__warm_blooded_animals",
                                     "mycorrhizal__endophyte",          
                                  "Lichen__microbe","plant_pathogen") ]) == 0)
 
-checking <- Li_tree_functions[m, ]
-checking <- checking[-which(is.na(checking$guild)), ]
+length(m) # 709 species do not have data
 
-# 26 fungi have guilds but they do not comform the clasification
-checking$guild[grep("mycorrizal", checking$guild, ignore.case = T)]
+length(which(is.na(Li_tree_functions$guild[m]))) # 663 and most of those is because we do not have
+# guild data reported in the first place
+
+# Meaning only 26 have guild data but the guilds cannot be classified under the system above
 
 
-# As a quick and dirty way of 
-all(Li_tree_functions$orginal_tree_names%in%Li_tree$tip.label)
+# As a quick and dirty way of starting the analysis, we concentrate first on the species for which
+# a) we have data and b) we the classification works
+
+Li_tree_functions <- Li_tree_functions[-m, ]
+
+pruned.tree <- drop.tip(Li_tree,
+                 Li_tree$tip.label[!Li_tree$tip.label%in%Li_tree_functions$orginal_tree_names])
+
+# Thus, for 967 species we have phylogenetic data and functional guild data that matches
 
 
